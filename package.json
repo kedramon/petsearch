@@ -1,0 +1,16 @@
+{
+  "name": "petsearch",
+  "version": "1.0.0",
+  "description": "NODE JS backend.",
+  "main": "app.js",
+  "scripts": {
+    "test": "set NODE_ENV=test && mocha --delay"
+  },
+  "author": "kedramon",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^4.13.5"
+  }
+}
