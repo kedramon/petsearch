@@ -2,19 +2,55 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+const passport = require('passport');
+
+const config = require('./config');
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 
-Users = require('./models/users');
+//Users = require('./models/users');
 Pets = require('./models/pets');
 
-mongoose.connect('mongodb://localhost/petstore')
+mongoose.connect(config.mongo_url)
 var db = mongoose.connection;
 
-app.get('/', function(req, res) {
-  res.send('Please use /api/pets or ');
+// Initialize swagger-jsdoc.
+var swaggerSpec = swaggerJSDoc(config.swagger);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Serve swagger.
+app.get('/swagger.json', function(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
 });
 
+// Use sessions for tracking logins.
+app.use(session({
+  secret: config.passport.secret,
+  resave: true,
+  saveUninitialized: false,
+  store: new MongoStore({
+    mongooseConnection: db
+  })
+}));
+
+
+app.get('/', function(req, res) {
+  res.send('Please wisit /api-docs ');
+});
+
+app.use(require('./src/routes.js'));
+
+app.use(bodyParser.urlencoded({'extended': 'true'}));
+app.use(bodyParser.json());
+/*
 app.get('/api/pets', function(req, res) {
   Pets.getPets(function(err, pets) {
     if (err) {
@@ -43,5 +79,6 @@ app.get('/api/pets/:id', function(req, res) {
     res.json(pet);
   });
 });
+*/
 
 app.listen(3000);
