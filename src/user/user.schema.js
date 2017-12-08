@@ -1,5 +1,7 @@
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
+'use strict';
+
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 // Users Schema.
 var userSchema = mongoose.Schema({
@@ -26,7 +28,7 @@ var userSchema = mongoose.Schema({
 // Hashing a password before saving it to the database.
 userSchema.pre('save', function (next) {
   var user = this;
-  bcrypt.hash(user.password, 10, function (err, hash){
+  bcrypt.hash(user.password, 10, function (err, hash) {
     if (err) {
       return next(err);
     }
@@ -35,6 +37,4 @@ userSchema.pre('save', function (next) {
   })
 });
 
-var User = mongoose.model('User', userSchema);
-
-module.exports = User;
+module.exports = userSchema;

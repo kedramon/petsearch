@@ -1,12 +1,20 @@
-const User = require('../user.schema');
+const User = require('../user.model');
 
 // Get users.
-module.exports = function(req, res, next) {
-  User.find(function(err, users) {
+module.exports = async function (req, res, next) {
+  var users, userModel = new User();
+
+  try {
+    users = await userModel.usersList();
+  } catch (ex) {
+    console.log(ex);
+  }
+
+  return res.send(users);
+  User.find(function (err, users) {
     if (err) {
       throw err;
     }
-    console.log(users);
     return res.json(users);
   });
 

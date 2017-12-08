@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -15,11 +17,9 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
-//Users = require('./models/users');
-Pets = require('./models/pets');
-
-mongoose.connect(config.mongo_url)
+mongoose.connect(config.mongo_url, {useMongoClient: true})
 var db = mongoose.connection;
+mongoose.Promise = require('bluebird');
 
 // Initialize swagger-jsdoc.
 var swaggerSpec = swaggerJSDoc(config.swagger);
@@ -40,6 +40,8 @@ app.use(session({
     mongooseConnection: db
   })
 }));
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 app.get('/', function(req, res) {
